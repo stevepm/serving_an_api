@@ -13,4 +13,16 @@ class CarsController < ActionController::Base
   def show
     @car = Car.find(params[:id])
   end
+
+  def create
+    json = params["car"]
+    @car = Car.create(:color => json["color"],
+                      :doors => json["doors"],
+                      :purchased_on => json["purchased_on"],
+                      :make => json["make"]["id"])
+    respond_to do |format|
+      format.json { render :action => 'show', :status => 200, :location => @car }
+    end
+  end
+
 end

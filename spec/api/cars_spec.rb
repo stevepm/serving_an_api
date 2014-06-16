@@ -91,7 +91,42 @@ describe 'Car API' do
 
       get '/cars/2', {}, {'Accept' => 'application/json'}
       expect(response.code.to_i).to eq 404
+
     end
   end
+
+  describe '/post/cars' do
+    it 'posts to cars' do
+      ford = create_make(:name => "Ford")
+      params = {:car => {:color => "blue",
+                         :doors => 4,
+                         :purchased_on => Date.today,
+                         :make => ford}}
+      post "/cars",
+        params.to_json,
+        {'CONTENT_TYPE' => 'application/json', 'Accept' => 'application/json' }
+
+      car = Car.last
+
+      expected = {
+        "_links" => {
+          "self" => {
+            "href" => "/cars/#{car.id}"
+          },
+          "make" => {
+            "href" => "/makes/#{ford.id}"
+          }
+        },
+        "id" => car.id,
+        "color" => "blue",
+        "doors" => 4,
+        "purchased_on" => "2014-06-16T00:00:00.000Z"
+      }
+
+      expect(JSON.parse(response.body)).to eq expected
+    end
+  end
+
+
 
 end
