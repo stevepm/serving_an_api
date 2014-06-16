@@ -6,4 +6,5 @@ gem 'jbuilder', '~> 2.0'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.1'
+  gem 'jazz_hands'
 end
