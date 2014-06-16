@@ -97,6 +97,7 @@ describe 'Car API' do
 
   describe '/post/cars' do
     it 'posts to cars' do
+      api_key = ApiKey.create!
       ford = create_make(:name => "Ford")
       params = {:car => {:color => "blue",
                          :doors => 4,
@@ -104,7 +105,7 @@ describe 'Car API' do
                          :make => ford}}
       post "/cars",
         params.to_json,
-        {'CONTENT_TYPE' => 'application/json', 'Accept' => 'application/json' }
+        {'Authorization' => api_key.access_token, 'CONTENT_TYPE' => 'application/json', 'Accept' => 'application/json' }
 
       car = Car.last
 
@@ -127,6 +128,21 @@ describe 'Car API' do
     end
   end
 
+  describe '/post/cars' do
+    it "If the request does not include a User's API token, then the endpoint returns a 401." do
+      ford = create_make(:name => "Ford")
+      params = {:car => {:color => "blue",
+                         :doors => 4,
+                         :purchased_on => Date.today,
+                         :make => ford}}
+      post "/cars",
+        params.to_json,
+        { 'CONTENT_TYPE' => 'application/json', 'Accept' => 'application/json' }
+
+
+      expect(response.code.to_i).to eq 401
+    end
+  end
 
 
 end
