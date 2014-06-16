@@ -63,4 +63,35 @@ describe 'Car API' do
     end
   end
 
+  describe '/get/cars/1' do
+    it 'will return a correct json' do
+      ford = create_make(:name => "Ford")
+      blue_four_door = create_car(:color => "blue",
+                                  :doors => 4,
+                                  :purchased_on=> "2013-01-01",
+                                  :make => ford)
+      get "/cars/#{blue_four_door.id}", {}, {'Accept' => 'application/json'}
+
+      expected_response = {
+        "_links" => {
+          "self" => {
+            "href" => "/cars/#{blue_four_door.id}"
+          },
+          "make" => {
+            "href" => "/makes/#{ford.id}"
+          }
+        },
+        "id" => blue_four_door.id,
+        "color" => "blue",
+        "doors" => 4,
+        "purchased_on" => "2013-01-01T00:00:00.000Z"
+      }
+      expect(response.code.to_i).to eq 200
+      expect(JSON.parse(response.body)).to eq(expected_response)
+
+      get '/cars/2', {}, {'Accept' => 'application/json'}
+      expect(response.code.to_i).to eq 404
+    end
+  end
+
 end
